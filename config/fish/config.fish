@@ -13,3 +13,5 @@ if set -q THEME_MODE
 else
     fish_config theme choose "Rosé Pine"
 end
+
+starship init fish | source
