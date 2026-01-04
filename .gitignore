@@ -2,3 +2,12 @@
 *.backup
 .DS_STORE
 fish_variables
+
+config/fish/fish_variables
+config/fish/fishd.*
+
+config/fish/functions/*
+!config/fish/functions/tmpcd*.fish
+
+config/fish/completions/*
+config/fish/themes

@@ -49,6 +49,9 @@ end
 config.colors = colors
 config.window_frame = window_frame
 
-config.font = wezterm.font_with_fallback({ "JetBrains Mono", "Cascadia Code Mono", "FiraCode Mono" })
+config.font = wezterm.font_with_fallback({ "JetBrainsMono Nerd Font", "CaskaydiaCove Nerd Font" })
+config.font_size = 12.0
+config.line_height = 1.1
+config.harfbuzz_features = { "calt=1", "liga=1", "clig=1" }
 config.hide_tab_bar_if_only_one_tab = true
 return config
