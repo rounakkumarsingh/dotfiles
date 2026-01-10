@@ -1,0 +1,16 @@
+{
+	"$schema": "https://opencode.ai/config.json",
+	"lsp": {
+		"pyright": { "disabled": true },
+
+		"ty": {
+			"command": ["ty", "lsp"],
+			"extensions": [".py"]
+		},
+
+		"ruff": {
+			"command": ["ruff", "lsp"],
+			"extensions": [".py"]
+		}
+	}
+}

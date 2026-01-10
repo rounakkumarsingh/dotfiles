@@ -1,2 +1,2 @@
-- [] Add bat config
+- [x] Add bat config
 - [] add rose-pine to tmux

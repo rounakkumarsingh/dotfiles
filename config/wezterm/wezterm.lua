@@ -4,54 +4,76 @@ local rose_pine_dawn = require("lua.themes.rose-pine").dawn
 local config = wezterm.config_builder()
 
 config.default_domain = "WSL:Ubuntu"
-wezterm.log_info(wezterm.default_wsl_domains())
 
+-- 1. Helper Functions
+local function get_scheme(appearance)
+	if appearance:find("Dark") then
+		return {
+			colors = rose_pine_dark.colors(),
+			window_frame = rose_pine_dark.window_frame(),
+			name = "dark",
+		}
+	else
+		return {
+			colors = rose_pine_dawn.colors(),
+			window_frame = rose_pine_dawn.window_frame(),
+			name = "light",
+		}
+	end
+end
+
+local function write_theme_state_to_wsl(theme_name)
+	-- Write the theme state to a file inside WSL so Fish can see it
+	wezterm.run_child_process({
+		"wsl.exe",
+		"-d",
+		"Ubuntu",
+		"bash",
+		"-c",
+		"mkdir -p ~/.cache && echo " .. theme_name .. " > ~/.cache/theme_mode",
+	})
+end
+
+-- 2. Event Listener for Dynamic Updates
+wezterm.on("update-status", function(window, pane)
+	local appearance = wezterm.gui.get_appearance()
+	local scheme = get_scheme(appearance)
+	local overrides = window:get_config_overrides() or {}
+
+	-- Only update if the theme actually changed
+	if not overrides.colors or overrides.colors.background ~= scheme.colors.background then
+		window:set_config_overrides({
+			colors = scheme.colors,
+			window_frame = scheme.window_frame,
+		})
+		
+		-- Broadcast the change to WSL
+		write_theme_state_to_wsl(scheme.name)
+		wezterm.log_info("Switched theme to " .. scheme.name)
+	end
+end)
+
+-- 3. Initial Configuration
+local appearance = wezterm.gui.get_appearance()
+local scheme = get_scheme(appearance)
+
+config.colors = scheme.colors
+config.window_frame = scheme.window_frame
+
+-- Set initial environment for new shells
 config.set_environment_variables = {
+	THEME_MODE = scheme.name,
 	WSLENV = "THEME_MODE/u",
 }
 
-local THEME_SCRIPT = "/home/rounakkumarsingh/dotfiles/scripts/get-system-theme.fish"
+-- Ensure state is consistent on startup
+write_theme_state_to_wsl(scheme.name)
 
-local ok, theme, stderr = wezterm.run_child_process({
-	"wsl.exe",
-	"-d",
-	"Ubuntu",
-	"-e",
-	"fish",
-	"-c",
-	THEME_SCRIPT,
-})
-
-if ok and theme then
-	theme = theme:gsub("%s+", "")
-
-	if theme ~= "" then
-		config.set_environment_variables.THEME_MODE = theme
-		wezterm.log_info("THEME_MODE =", theme)
-	else
-		wezterm.log_warn("get-system-theme returned empty output")
-	end
-else
-	wezterm.log_warn("get-system-theme failed:", stderr)
-end
-
-local colors = nil
-local window_frame = nil
-
-if theme == "light" then
-	colors = rose_pine_dawn.colors()
-	window_frame = rose_pine_dawn.window_frame()
-else
-	colors = rose_pine_dark.colors()
-	window_frame = rose_pine_dark.window_frame()
-end
-
-config.colors = colors
-config.window_frame = window_frame
-
+-- 4. General Settings
 config.font = wezterm.font_with_fallback({ "JetBrainsMono Nerd Font", "CaskaydiaCove Nerd Font" })
 config.font_size = 12.0
 config.line_height = 1.1
 config.harfbuzz_features = { "calt=1", "liga=1", "clig=1" }
 config.hide_tab_bar_if_only_one_tab = true
+
 return config

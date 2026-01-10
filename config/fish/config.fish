@@ -15,3 +15,8 @@ else
 end
 
 starship init fish | source
+
+check_daily_attendance
+
+# opencode
+fish_add_path /home/rounakkumarsingh/.opencode/bin
