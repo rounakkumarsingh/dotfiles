@@ -29,6 +29,13 @@ return {
 			html = { "prettier" },
 			css = { "prettier" },
 			yaml = { "prettier" },
+
+			go = { "goimports", "gofumpt" },
+
+			python = { "ruff" },
+
+			c = { "clang-format" },
+			cpp = { "clang-format" },
 		},
 		default_format_opts = {
 			lsp_format = "never",
