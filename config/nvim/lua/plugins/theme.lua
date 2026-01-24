@@ -6,10 +6,9 @@ local spec = require("plugins.theme_raw")
 
 -- Mark everything disabled so Lazy.nvim ignores it
 for _, entry in ipairs(spec) do
-    if entry[1] == "LazyVim/LazyVim" then
-        entry.enabled = false
-    end
+	if entry[1] == "LazyVim/LazyVim" then
+		entry.enabled = false
+	end
 end
-
+spec.priority = 1100
 return spec
-

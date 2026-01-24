@@ -144,3 +144,10 @@ vim.lsp.config("clangd", {
 	},
 })
 vim.lsp.enable("clangd")
+
+-- JS/TS setup
+vim.lsp.config("biome", {
+	capabilities = capabilities,
+	on_attach = on_attach,
+})
+vim.lsp.enable("biome")

@@ -24,7 +24,6 @@ function M.load()
         vim.cmd("syntax reset")
     end
 
-    vim.o.background = "dark"
     pcall(vim.cmd.colorscheme, colorscheme)
 
     pcall(

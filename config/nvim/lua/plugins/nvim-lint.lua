@@ -9,8 +9,8 @@ return {
 			javascriptreact = { "biomejs" },
 			typescriptreact = { "biomejs" },
 			json = { "biomejs" },
-			c = { "clangtidy" },
-			cpp = { "clangtidy" },
+			go = { "golangci-lint" },
+			python = { "ruff" },
 		}
 		local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
 		vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
