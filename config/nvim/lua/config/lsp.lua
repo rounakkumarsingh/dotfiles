@@ -28,21 +28,21 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = blink.get_lsp_capabilities(capabilities)
 
 local on_attach = function(client, bufnr)
-	vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = bufnr })
-	vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, {
+	vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = bufnr, desc = "Hover documentation" })
+	vim.keymap.set("n", "<leader>xd", vim.diagnostic.open_float, {
 		buffer = bufnr,
 		desc = "Show diagnostics at cursor",
 	})
-	vim.keymap.set("n", "gd", vim.lsp.buf.definition, { buffer = bufnr })
-	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = bufnr })
-	vim.keymap.set("n", "gr", vim.lsp.buf.references, { buffer = bufnr })
-	vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { buffer = bufnr })
-	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { buffer = bufnr })
-	vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, { buffer = bufnr })
+	vim.keymap.set("n", "gd", vim.lsp.buf.definition, { buffer = bufnr, desc = "Go to definition" })
+	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = bufnr, desc = "Go to declaration" })
+	vim.keymap.set("n", "gr", vim.lsp.buf.references, { buffer = bufnr, desc = "Go to references" })
+	vim.keymap.set("n", "<leader>cr", vim.lsp.buf.rename, { buffer = bufnr, desc = "Code rename" })
+	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { buffer = bufnr, desc = "Code action" })
+	vim.keymap.set("n", "<leader>cs", vim.lsp.buf.signature_help, { buffer = bufnr, desc = "Code signature help" })
 	if vim.lsp.inlay_hint and client.server_capabilities.inlayHintProvider then
 		vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
 	end
-	vim.keymap.set("n", "<leader>ih", function()
+	vim.keymap.set("n", "<leader>ti", function()
 		vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = bufnr }), { bufnr = bufnr })
 	end, { buffer = bufnr, desc = "Toggle inlay hints" })
 	vim.keymap.set("n", "<leader>li", "<cmd>LspInfo<cr>", { desc = "LSP Info" })
