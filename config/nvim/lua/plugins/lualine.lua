@@ -9,6 +9,7 @@ return {
 				lualine_c = { "filename" },
 
 				lualine_x = {
+					require("utils.project").get_active_python_env,
 					{
 						function()
 							local reg = vim.fn.reg_recording()

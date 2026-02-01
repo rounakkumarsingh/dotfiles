@@ -1,51 +1,43 @@
+-- lua/plugins/conform.lua
 return {
 	"stevearc/conform.nvim",
 	event = { "BufWritePre" },
 	cmd = { "ConformInfo" },
-	keys = {
-		{
-			-- Customize or remove this keymap to your liking
-			"<leader>f",
-			function()
-				require("conform").format({ async = true })
-			end,
-			mode = "",
-			desc = "Format buffer",
-		},
-	},
-	-- This will provide type hinting with LuaLS
-	---@module "conform"
-	---@type conform.setupOpts
-	opts = {
-		formatters_by_ft = {
-			lua = { "stylua" },
+	-- The `opts` function is the modern way to configure lazy.nvim plugins.
+	opts = function()
+		local project = require("utils.project")
 
-			javascript = { "biome" },
-			typescript = { "biome" },
-			javascriptreact = { "biome" },
-			typescriptreact = { "biome" },
-			json = { "biome" },
-
-			html = { "prettier" },
-			css = { "prettier" },
-			yaml = { "prettier" },
-
-			go = { "goimports", "gofumpt" },
-
-			python = { "ruff" },
-
-			c = { "clang-format" },
-			cpp = { "clang-format" },
-		},
-		default_format_opts = {
-			lsp_format = "never",
-		},
-
-		format_on_save = {
-			timeout_ms = 500,
-		},
-	},
-	init = function()
-		vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
+		return {
+			-- A map of filetypes to the formatters to use.
+			formatters_by_ft = {
+				lua = { "stylua" },
+				-- For python, we run ruff which can do both fixing and formatting.
+				python = { "ruff_fix", "ruff_format" },
+				go = { "goimports-reviser", "gofumpt" },
+			},
+			-- Define all our formatters here.
+			formatters = {
+				["goimports-reviser"] = {
+					prepend_args = { "-rm-unused" },
+				},
+				ruff_format = {
+					command = function(self, bufnr)
+						return require("utils.project").get_executable(vim.api.nvim_buf_get_name(bufnr), "ruff")
+					end,
+					args = { "format", "--force-exclude", "--stdin-filename", "$FILENAME", "-" },
+				},
+				ruff_fix = {
+					command = function(self, bufnr)
+						return require("utils.project").get_executable(vim.api.nvim_buf_get_name(bufnr), "ruff")
+					end,
+					args = { "check", "--fix", "--force-exclude", "--exit-zero", "--no-cache", "--stdin-filename", "$FILENAME", "-" },
+				},
+			},
+			-- Configuration for the format-on-save behavior.
+			format_on_save = {
+				timeout_ms = 2000,
+				lsp_format = "fallback",
+			},
+		}
 	end,
 }

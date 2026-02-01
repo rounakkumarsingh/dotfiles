@@ -82,12 +82,20 @@
 | Keymap | Action |
 | :--- | :--- |
 | `<leader>ll` | **L**int file |
+| `<leader>li` | **L**SP **I**nfo |
 
 ### Debug (`<leader>d`)
 
 | Keymap | Action |
 | :--- | :--- |
 | `<leader>dv` | Toggle **V**irtual text |
+| `<leader>b` | Toggle **B**reakpoint |
+| `<leader>B` | Set conditional **B**reakpoint |
+| `<F5>` | Start/Continue |
+| `<F10>` | Step over |
+| `<F11>` | Step into |
+| `<F12>` | Step out |
+| `<leader>du` | Toggle **U**I |
 
 ### General
 
@@ -99,3 +107,4 @@
 | `gd` | Go to definition |
 | `gD` | Go to declaration |
 | `gr` | Go to references |
+| `<leader>?` | Show keymaps |
