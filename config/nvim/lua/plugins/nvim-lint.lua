@@ -6,6 +6,11 @@ return {
 		lint.linters_by_ft = {
 			python = { "ruff" },
 			go = { "golangcilint" },
+			javascript = { "biome" },
+			typescript = { "biome" },
+			javascriptreact = { "biome" },
+			typescriptreact = { "biome" },
+			json = { "biome" },
 		}
 
 		local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })

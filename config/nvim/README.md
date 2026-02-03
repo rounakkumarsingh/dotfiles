@@ -28,6 +28,13 @@ A high-performance, modular Neovim configuration built for Go and Python develop
 - **Formatting**: `clang-format` (LLVM style).
 - **Navigation**: Support for switching between source and header files.
 
+### JS/TS (Web Stack)
+- **Runtime**: `bun` centric (Prioritizes `bun.lockb` for root detection).
+- **LSP**: `vtsls` (Source definition jumping, refactoring) + `biome` (Fast linting).
+- **Formatting**: `biome` (Rust-based, ultra fast).
+- **UI**: `tailwindcss` and `cssls` support.
+- **Config Intelligence**: `jsonls` with `SchemaStore` (Autocompletions for over 400+ JSON/YAML schemas).
+
 ## ⌨️ Keymaps
 
 ### Navigation (LSP)
@@ -47,6 +54,9 @@ A high-performance, modular Neovim configuration built for Go and Python develop
 | `<leader>cr` | Rename | Project-wide rename via Snacks UI |
 | `<leader>ca` | Code Action | Contextual fixes via Snacks/Telescope |
 | `<leader>cs` | Signature | Show function signature help |
+| `<leader>co` | Organize | Organize imports (JS/TS - vtsls) |
+| `<leader>cI` | Add Imports | Add missing imports (JS/TS - vtsls) |
+| `<leader>cf` | Biome Fix | Apply all suggested linting fixes (Biome) |
 
 ### Diagnostics & Toggles
 | Key | Action | Description |

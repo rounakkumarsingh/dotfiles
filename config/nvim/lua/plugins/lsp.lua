@@ -13,6 +13,11 @@ return {
 				"golangci-lint",
 				"clangd",
 				"clang-format",
+				"vtsls",
+				"biome",
+				"tailwindcss-language-server",
+				"json-lsp",
+				"css-lsp",
 			},
 		},
 	},
@@ -22,7 +27,7 @@ return {
 		"williamboman/mason-lspconfig.nvim",
 		dependencies = { "williamboman/mason.nvim", "neovim/nvim-lspconfig" },
 		opts = {
-			ensure_installed = { "basedpyright", "gopls", "clangd" },
+			ensure_installed = { "basedpyright", "gopls", "clangd", "vtsls", "biome", "tailwindcss", "jsonls", "cssls" },
 			automatic_enable = true,
 		},
 	},
@@ -34,6 +39,7 @@ return {
 		dependencies = {
 			"williamboman/mason-lspconfig.nvim",
 			"saghen/blink.cmp",
+			"b0o/SchemaStore.nvim",
 		},
 		config = function()
 			require("config.lsp.init").setup()

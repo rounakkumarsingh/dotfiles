@@ -46,6 +46,8 @@ function M.find_root(filename)
 	end
 
 	local root = find_ancestor(filename, {
+		"bun.lockb",
+		"bun.lock",
 		".git",
 		"pyproject.toml",
 		"setup.py",

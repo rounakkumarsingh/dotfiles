@@ -12,6 +12,18 @@ M.lsp_keymaps = {
 	{ "<leader>cr", function() Snacks.rename.rename() end, desc = "Rename Symbol" },
 	{ "<leader>ca", function() vim.lsp.buf.code_action() end, desc = "Code Action", mode = { "n", "v" } },
 	{ "<leader>cs", vim.lsp.buf.signature_help, desc = "Signature Help" },
+	{ "<leader>co", function()
+		vim.lsp.buf.execute_command({ command = "_typescript.organizeImports", arguments = { vim.api.nvim_buf_get_name(0) } })
+	end, desc = "Organize Imports" },
+	{ "<leader>cI", function()
+		vim.lsp.buf.execute_command({ command = "_typescript.addMissingImports", arguments = { vim.api.nvim_buf_get_name(0) } })
+	end, desc = "Add Missing Imports" },
+	{ "<leader>cf", function()
+		vim.lsp.buf.code_action({
+			context = { only = { "source.fixAll" } },
+			apply = true,
+		})
+	end, desc = "Fix All (Biome/LSP)" },
 	{ "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
 	{ "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics (Trouble)" },
 	{ "<leader>cl", "<cmd>Trouble lsp toggle focus=false win.position=right<cr>", desc = "LSP Definitions/references/... (Trouble)" },
@@ -28,8 +40,14 @@ function M.on_attach(client, bufnr)
 		vim.keymap.set(mode, map[1], map[2], opts)
 	end
 
-	-- Enable inlay hints by default if supported
-	if client:supports_method("textDocument/inlayHint") then
+	-- Handle inlay hints
+	-- Default to true unless explicitly disabled in server config
+	local inlay_hints_enabled = true
+	if client.config and client.config.inlay_hints == false then
+		inlay_hints_enabled = false
+	end
+
+	if inlay_hints_enabled and client:supports_method("textDocument/inlayHint") then
 		vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
 	end
 end
