@@ -19,5 +19,10 @@ vim.keymap.set({ "n", "v" }, "<leader>p", '"+p', { desc = "Paste from clipboard"
 --dap virtual text
 vim.keymap.set("n", "<leader>dv", "<cmd>DapVirtualTextToggle<CR>", { desc = "Debug: Toggle virtual text" })
 
+-- Diagnostics
+vim.keymap.set("n", "<leader>xd", vim.diagnostic.open_float, { desc = "Show line diagnostics" })
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic" })
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next diagnostic" })
+
 -- Show keymaps
 vim.keymap.set("n", "<leader>?", "<cmd>WhichKey<CR>", { desc = "Show keymaps" })
