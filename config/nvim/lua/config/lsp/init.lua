@@ -9,7 +9,7 @@ M.lsp_keymaps = {
 	{ "gs", function() require("telescope.builtin").lsp_document_symbols() end, desc = "Document Symbols" },
 	{ "gS", function() require("telescope.builtin").lsp_workspace_symbols() end, desc = "Workspace Symbols" },
 	{ "K", vim.lsp.buf.hover, desc = "Hover Documentation" },
-	{ "<leader>cr", function() Snacks.rename.rename() end, desc = "Rename Symbol" },
+	{ "<leader>cr", vim.lsp.buf.rename, desc = "Rename Symbol" },
 	{ "<leader>ca", function() vim.lsp.buf.code_action() end, desc = "Code Action", mode = { "n", "v" } },
 	{ "<leader>cs", vim.lsp.buf.signature_help, desc = "Signature Help" },
 	{ "<leader>co", function()
