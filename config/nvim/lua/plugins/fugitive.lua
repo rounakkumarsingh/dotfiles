@@ -5,4 +5,8 @@ return {
 		"LazygitCurrentFile",
 		"LazygitRoot",
 	},
+	lazy = true,
+	dependencies = {
+		"nvim-lua/plenary.nvim",
+	},
 }
