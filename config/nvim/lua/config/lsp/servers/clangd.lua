@@ -7,6 +7,10 @@ return {
 		"--completion-style=detailed",
 		"--function-arg-placeholders",
 		"--fallback-style=llvm",
+		-- Fallback flags for when compile_commands.json is not available
+		"-xc",
+		"--",
+		"-std=c11",
 	},
 	settings = {
 		clangd = {
@@ -15,8 +19,14 @@ return {
 				parameterNames = true,
 				deducedTypes = true,
 			},
+			compilationDatabaseDirectory = "build",
 		},
 	},
+	root_dir = function(fname)
+		local util = require("lspconfig.util")
+		return util.root_pattern("compile_commands.json", "compile_flags.txt", ".clangd", "CMakeLists.txt")(fname)
+			or util.root_pattern("*.c", "*.h")(fname)
+	end,
 	on_attach = function(client, bufnr)
 		local base_on_attach = require("config.lsp.init").on_attach
 		base_on_attach(client, bufnr)
@@ -24,7 +34,6 @@ return {
 		local function get_alternate_file()
 			local bufname = vim.api.nvim_buf_get_name(bufnr)
 			local ext = vim.fn.fnamemodify(bufname, ":e")
-			local base = vim.fn.fnamemodify(bufname, ":r")
 			local dir = vim.fn.fnamemodify(bufname, ":p:h")
 
 			if ext == "h" or ext == "hpp" then
@@ -66,73 +75,70 @@ return {
 		end, { buffer = bufnr, desc = "Switch Source/Header" })
 
 		vim.keymap.set("n", "<leader>ci", function()
-			local params = vim.lsp.util.make_position_params()
-			client:request("textDocument/codeAction", params, function(err, actions)
-				if err or not actions then return end
+			vim.lsp.buf.code_action({
+				context = {
+					only = { "source" },
+				},
+			}, function(_, result)
+				if not result or vim.tbl_isempty(result) then
+					vim.notify("No code actions available", vim.log.levels.INFO)
+					return
+				end
 
 				local implement_actions = {}
-				for _, action in ipairs(actions) do
-					if action.title:match("implement") or action.title:match("definition") then
+				for _, action in ipairs(result) do
+					if action.title:lower():match("implement") or 
+					   action.title:lower():match("add definition") or
+					   action.title:lower():match("generate") then
 						table.insert(implement_actions, action)
 					end
 				end
 
-				if #implement_actions == 0 then
-					vim.notify("No implementations available", vim.log.levels.INFO)
-					return
+				if #implement_actions > 0 then
+					vim.ui.select(implement_actions, { prompt = "Select action:" }, function(choice)
+						if choice and choice.edit then
+							vim.lsp.util.apply_workspace_edit(choice.edit)
+						elseif choice and choice.command then
+							client:execute_command(choice.command, {})
+						end
+					end)
+				else
+					vim.notify("No implementation actions available", vim.log.levels.INFO)
 				end
-
-				vim.ui.select(implement_actions, { prompt = "Select action:" }, function(choice)
-					if choice and choice.edit then
-						vim.lsp.util.apply_workspace_edit(choice.edit)
-					elseif choice and choice.command then
-						client:execute_command(choice.command, {})
-					end
-				end)
-			end, bufnr)
+			end)
 		end, { buffer = bufnr, desc = "Implement Functions" })
 
 		vim.keymap.set("n", "<leader>co", function()
-			local params = vim.lsp.util.make_position_params()
-			client:request("textDocument/codeAction", params, function(err, actions)
-				if err or not actions then return end
+			vim.lsp.buf.code_action({
+				context = {
+					only = { "source", "quickfix" },
+				},
+			}, function(_, result)
+				if not result or vim.tbl_isempty(result) then
+					vim.notify("No code actions available", vim.log.levels.INFO)
+					return
+				end
 
 				local include_actions = {}
-				for _, action in ipairs(actions) do
-					if action.title:match("[Aa]dd include") or action.title:match("[Oo]rganize") then
+				for _, action in ipairs(result) do
+					local title = action.title:lower()
+					if title:match("include") or title:match("remove") or title:match("organize") then
 						table.insert(include_actions, action)
 					end
 				end
 
-				if #include_actions == 0 then
-					vim.notify("No include actions available", vim.log.levels.INFO)
-					return
-				end
-
-				vim.ui.select(include_actions, { prompt = "Select action:" }, function(choice)
-					if choice and choice.edit then
-						vim.lsp.util.apply_workspace_edit(choice.edit)
-					elseif choice and choice.command then
-						client:execute_command(choice.command, {})
-					end
-				end)
-			end, bufnr)
-		end, { buffer = bufnr, desc = "Add/Organize Includes" })
-
-		vim.keymap.set("n", "gi", function()
-			local params = vim.lsp.util.make_position_params()
-			client:request("textDocument/implementation", params, function(err, result)
-				if err then
-					vim.notify("Implementation not found", vim.log.levels.WARN)
-					return
-				end
-				if result and #result > 0 then
-					vim.lsp.util.locations_to_items(result)
-					require("telescope.builtin").lsp_implementations()
+				if #include_actions > 0 then
+					vim.ui.select(include_actions, { prompt = "Select action:" }, function(choice)
+						if choice and choice.edit then
+							vim.lsp.util.apply_workspace_edit(choice.edit)
+						elseif choice and choice.command then
+							client:execute_command(choice.command, {})
+						end
+					end)
 				else
-					vim.notify("No implementations found", vim.log.levels.INFO)
+					vim.notify("No include actions available", vim.log.levels.INFO)
 				end
-			end, bufnr)
-		end, { buffer = bufnr, desc = "Go to Implementation" })
+			end)
+		end, { buffer = bufnr, desc = "Add/Organize Includes" })
 	end,
 }
