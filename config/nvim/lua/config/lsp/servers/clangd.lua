@@ -18,20 +18,6 @@ return {
 		},
 	},
 	on_attach = function(client, bufnr)
-		client.server_capabilities.semanticTokensProvider = {
-			full = vim.empty_dict(),
-			legend = {
-				tokenTypes = {
-					"comment", "keyword", "string", "number", "regexp", "type", "class", "function",
-					"variable", "parameter", "property", "label", "operator", "punctuation", "decorator",
-				},
-				tokenModifiers = {
-					"declaration", "definition", "readonly", "static", "deprecated", "abstract", "async",
-					"modification", "documentation", "defaultLibrary",
-				},
-			},
-		}
-
 		local base_on_attach = require("config.lsp.init").on_attach
 		base_on_attach(client, bufnr)
 

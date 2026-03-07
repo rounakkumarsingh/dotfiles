@@ -101,7 +101,6 @@ function M.get_capabilities()
 		vim.lsp.protocol.make_client_capabilities(),
 		require("blink.cmp").get_lsp_capabilities()
 	)
-	capabilities.semanticTokensProvider = nil
 	return capabilities
 end
 
