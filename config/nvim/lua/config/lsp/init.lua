@@ -176,6 +176,7 @@ function M.setup()
 		}, config or {})
 
 		vim.lsp.config(server_name, final_config)
+		vim.lsp.enable(server_name, true)
 	end
 end
 
