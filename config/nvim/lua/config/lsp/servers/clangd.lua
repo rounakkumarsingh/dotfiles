@@ -7,10 +7,6 @@ return {
 		"--completion-style=detailed",
 		"--function-arg-placeholders",
 		"--fallback-style=llvm",
-		-- Fallback flags for when compile_commands.json is not available
-		"-xc",
-		"--",
-		"-std=c11",
 	},
 	settings = {
 		clangd = {
@@ -19,14 +15,8 @@ return {
 				parameterNames = true,
 				deducedTypes = true,
 			},
-			compilationDatabaseDirectory = "build",
 		},
 	},
-	root_dir = function(fname)
-		local util = require("lspconfig.util")
-		return util.root_pattern("compile_commands.json", "compile_flags.txt", ".clangd", "CMakeLists.txt")(fname)
-			or util.root_pattern("*.c", "*.h")(fname)
-	end,
 	on_attach = function(client, bufnr)
 		local base_on_attach = require("config.lsp.init").on_attach
 		base_on_attach(client, bufnr)
