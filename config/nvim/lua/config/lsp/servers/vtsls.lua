@@ -50,33 +50,17 @@ return {
 			vim.lsp.buf.execute_command({ command = "_typescript.addMissingImports", arguments = { vim.api.nvim_buf_get_name(0) } })
 		end, { buffer = bufnr, desc = "Add Missing Imports" })
 
-		local function rename_and_refactor(new_name)
-			local params = vim.lsp.util.make_position_params()
-			params.newName = new_name
-
-			client:request("textDocument/rename", params, function(err, result)
-				if err or not result or vim.tbl_isempty(result) then
-					vim.notify("Rename not available or no changes needed", vim.log.levels.WARN)
-					return
-				end
-
-				vim.lsp.util.apply_workspace_edit(result)
-
-				vim.schedule(function()
-					local changes = result.documentChanges or result.changes or {}
-					if #changes > 0 then
-						vim.cmd("DoCleanup")
+		-- Override the generic <leader>cr with TS-aware rename
+		vim.keymap.set("n", "<leader>cr", function()
+			if vim.g.lsp_prompt_on_rename then
+				vim.ui.input({ prompt = "New name: " }, function(new_name)
+					if new_name and new_name ~= "" then
+						vim.lsp.buf.rename(new_name)
 					end
 				end)
-			end, bufnr)
-		end
-
-		vim.keymap.set("n", "<leader>cr", function()
-			vim.ui.input({ prompt = "New name: " }, function(new_name)
-				if new_name and new_name ~= "" then
-					rename_and_refactor(new_name)
-				end
-			end)
-		end, { buffer = bufnr, desc = "Rename Symbol (with refactor)" })
+			else
+				vim.lsp.buf.rename()
+			end
+		end, { buffer = bufnr, desc = "Rename Symbol (vtsls)" })
 	end,
 }
