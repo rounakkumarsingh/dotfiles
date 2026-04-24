@@ -53,18 +53,19 @@ return {
 			callback = function()
 				local names = lint.linters_by_ft[vim.bo.filetype]
 				if names and #names > 0 then
-					-- Check if any linter is actually available
-					local has_any = false
-					for _, name in ipairs(names) do
-						local linter = lint.linters[name]
-						if linter then
-							local cmd = linter.cmd or name
-							if vim.fn.executable(cmd) == 1 then
-								has_any = true
-								break
-							end
+				-- Check if any linter is actually available
+				local has_any = false
+				for _, name in ipairs(names) do
+					local linter = lint.linters[name]
+					if linter then
+						local cmd = linter.cmd or name
+						-- cmd can be a function or table in some linter configs
+						if type(cmd) == "string" and vim.fn.executable(cmd) == 1 then
+							has_any = true
+							break
 						end
 					end
+				end
 
 					if has_any then
 						lint.try_lint()
@@ -80,12 +81,16 @@ return {
 
 			print("Linters for " .. ft .. ":")
 			if linters and #linters > 0 then
-				for _, name in ipairs(linters) do
-					local linter = lint.linters[name]
-					local cmd = linter and linter.cmd or name
+			for _, name in ipairs(linters) do
+				local linter = lint.linters[name]
+				local cmd = linter and linter.cmd or name
+				if type(cmd) == "string" then
 					local available = vim.fn.executable(cmd) == 1 and "✓" or "✗"
 					print("  " .. available .. " " .. name .. " (" .. cmd .. ")")
+				else
+					print("  ? " .. name .. " (dynamic cmd)")
 				end
+			end
 			else
 				print("  None configured")
 			end
