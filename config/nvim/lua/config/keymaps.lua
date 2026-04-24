@@ -16,9 +16,6 @@ vim.keymap.set({ "n", "v" }, "<leader>y", '"+y', { desc = "Yank to clipboard" })
 -- Paste from system clipboard
 vim.keymap.set({ "n", "v" }, "<leader>p", '"+p', { desc = "Paste from clipboard" })
 
---dap virtual text
-vim.keymap.set("n", "<leader>dv", "<cmd>DapVirtualTextToggle<CR>", { desc = "Debug: Toggle virtual text" })
-
 -- Diagnostics
 vim.keymap.set("n", "<leader>xd", vim.diagnostic.open_float, { desc = "Show line diagnostics" })
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic" })

@@ -5,7 +5,15 @@ return {
 		lazy = false,
 		priority = 1000,
 		config = function()
-			require("omarchy.theme-adapter").load()
+			-- Only set up hot-reload if omarchy adapter exists
+			local ok, adapter = pcall(require, "omarchy.theme-adapter")
+			if not ok then
+				-- Silently skip on non-Omarchy systems
+				return
+			end
+
+			adapter.load()
+
 			vim.api.nvim_create_autocmd("User", {
 				pattern = "LazyReload",
 				callback = function()
@@ -13,12 +21,14 @@ return {
 					package.loaded["omarchy.theme-adapter"] = nil
 
 					vim.schedule(function()
-						require("omarchy.theme-adapter").load()
-						vim.cmd("redraw!")
+						local ok2, reloaded = pcall(require, "omarchy.theme-adapter")
+						if ok2 then
+							reloaded.load()
+							vim.cmd("redraw!")
+						end
 					end)
 				end,
 			})
 		end,
 	},
 }
-

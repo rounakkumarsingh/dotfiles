@@ -97,10 +97,16 @@ function M.on_attach(client, bufnr)
 end
 
 function M.get_capabilities()
-	local capabilities = vim.tbl_deep_extend("force",
-		vim.lsp.protocol.make_client_capabilities(),
-		require("blink.cmp").get_lsp_capabilities()
-	)
+	local ok, blink = pcall(require, "blink.cmp")
+	local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+	if ok then
+		capabilities = vim.tbl_deep_extend("force",
+			capabilities,
+			blink.get_lsp_capabilities()
+		)
+	end
+
 	return capabilities
 end
 
@@ -114,6 +120,18 @@ function M.setup()
 		vim.g.lsp_prompt_on_rename = not vim.g.lsp_prompt_on_rename
 		vim.notify("LSP rename prompt: " .. (vim.g.lsp_prompt_on_rename and "enabled" or "disabled"))
 	end, {})
+
+	vim.api.nvim_create_user_command("LspHealth", function()
+		local safe = require("core.safe_require")
+		local servers = { "basedpyright", "gopls", "clangd", "vtsls", "cssls", "jsonls", "tailwindcss" }
+		local available = safe.available_lsp_servers(servers)
+
+		print("=== LSP Server Status ===")
+		for _, s in ipairs(servers) do
+			local status = vim.tbl_contains(available, s) and "✓" or "✗"
+			print("  " .. status .. " " .. s)
+		end
+	end, { desc = "Check LSP server availability" })
 
 	if not _G.__lsp_workspace_edit_hooked then
 		_G.__lsp_workspace_edit_hooked = true
@@ -163,12 +181,32 @@ function M.setup()
 		severity_sort = true,
 	})
 
+	local safe = require("core.safe_require")
 	local servers_path = vim.fn.stdpath("config") .. "/lua/config/lsp/servers"
 	local server_files = vim.fn.glob(servers_path .. "/*.lua", false, true)
 
+	-- Track which servers are actually available
+	local desired_servers = {}
 	for _, file in ipairs(server_files) do
 		local server_name = vim.fn.fnamemodify(file, ":t:r")
-		local config = require("config.lsp.servers." .. server_name)
+		table.insert(desired_servers, server_name)
+	end
+
+	local available_servers = safe.available_lsp_servers(desired_servers)
+	local skipped_servers = {}
+
+	for _, server_name in ipairs(desired_servers) do
+		-- Check if server binary is available
+		if not vim.tbl_contains(available_servers, server_name) then
+			table.insert(skipped_servers, server_name)
+			goto continue
+		end
+
+		local ok, config = pcall(require, "config.lsp.servers." .. server_name)
+		if not ok then
+			vim.notify("Failed to load LSP config for " .. server_name, vim.log.levels.WARN)
+			goto continue
+		end
 
 		local final_config = vim.tbl_deep_extend("force", {
 			on_attach = M.on_attach,
@@ -177,6 +215,18 @@ function M.setup()
 
 		vim.lsp.config(server_name, final_config)
 		vim.lsp.enable(server_name)
+
+		::continue::
+	end
+
+	-- Notify about skipped servers once
+	if #skipped_servers > 0 and vim.g.notify_skipped_lsp == nil then
+		vim.g.notify_skipped_lsp = true
+		vim.notify(
+			"LSP servers skipped (not installed): " .. table.concat(skipped_servers, ", ") ..
+			". Run :LspHealth for details. Install via :Mason",
+			vim.log.levels.INFO
+		)
 	end
 end
 
