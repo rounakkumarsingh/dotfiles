@@ -65,7 +65,7 @@ function M.on_attach(client, bufnr)
 					apply = true,
 				})
 			end,
-			desc = "Fix All (Biome/LSP)"
+			desc = "Fix All (Oxc/LSP)"
 		})
 	else
 		table.insert(generic_keymaps, {

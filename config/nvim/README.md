@@ -30,8 +30,8 @@ A high-performance, modular Neovim configuration built for Go and Python develop
 
 ### JS/TS (Web Stack)
 - **Runtime**: `bun` centric (Prioritizes `bun.lockb` for root detection).
-- **LSP**: `vtsls` (Source definition jumping, refactoring) + `biome` (Fast linting).
-- **Formatting**: `biome` (Rust-based, ultra fast).
+- **LSP**: `vtsls` (Source definition jumping, refactoring) + `oxlint` (Fast linting).
+- **Formatting**: `oxfmt` (Oxc toolchain, ultra fast).
 - **UI**: `tailwindcss` and `cssls` support.
 - **Config Intelligence**: `jsonls` with `SchemaStore` (Autocompletions for over 400+ JSON/YAML schemas).
 
@@ -56,7 +56,7 @@ A high-performance, modular Neovim configuration built for Go and Python develop
 | `<leader>cs` | Signature | Show function signature help |
 | `<leader>co` | Organize | Organize imports (JS/TS - vtsls) |
 | `<leader>cI` | Add Imports | Add missing imports (JS/TS - vtsls) |
-| `<leader>cf` | Biome Fix | Apply all suggested linting fixes (Biome) |
+| `<leader>cf` | Oxc Fix | Apply all suggested linting fixes (Oxlint) |
 
 ### Diagnostics & Toggles
 | Key | Action | Description |

@@ -6,12 +6,12 @@ return {
 		lint.linters_by_ft = {
 			python = { "ruff" },
 			go = { "golangcilint" },
-			javascript = { "biomejs" },
-			typescript = { "biomejs" },
-			javascriptreact = { "biomejs" },
-			typescriptreact = { "biomejs" },
-			json = { "biomejs" },
-			jsonc = { "biomejs" },
+			javascript = { "oxlint" },
+			typescript = { "oxlint" },
+			javascriptreact = { "oxlint" },
+			typescriptreact = { "oxlint" },
+			json = { "oxlint" },
+			jsonc = { "oxlint" },
 		}
 
 		local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })

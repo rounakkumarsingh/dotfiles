@@ -1,6 +1,9 @@
 return {
 	"saghen/blink.cmp",
-	dependencies = "rafamadriz/friendly-snippets",
+	dependencies = {
+		"Exafunction/codeium.nvim",
+		"rafamadriz/friendly-snippets",
+	},
 	version = "*",
 	opts = {
 		keymap = {
@@ -18,7 +21,10 @@ return {
 			nerd_font_variant = "mono",
 		},
 		sources = {
-			default = { "lsp", "path", "snippets", "buffer" },
+			default = { "lsp", "path", "snippets", "buffer", "codeium" },
+			providers = {
+				codeium = { name = "Codeium", module = "codeium.blink", async = true },
+			},
 		},
 		completion = {
 			accept = { auto_brackets = { enabled = false } },

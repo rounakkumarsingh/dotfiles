@@ -14,7 +14,6 @@ return {
 				"clangd",
 				"clang-format",
 				"vtsls",
-				"biome",
 				"tailwindcss-language-server",
 				"json-lsp",
 				"css-lsp",
@@ -27,7 +26,7 @@ return {
 		"williamboman/mason-lspconfig.nvim",
 		dependencies = { "williamboman/mason.nvim", "neovim/nvim-lspconfig" },
 		opts = {
-			ensure_installed = { "basedpyright", "gopls", "clangd", "vtsls", "biome", "tailwindcss", "jsonls", "cssls" },
+			ensure_installed = { "basedpyright", "gopls", "clangd", "vtsls", "tailwindcss", "jsonls", "cssls" },
 			automatic_enable = true,
 		},
 	},
